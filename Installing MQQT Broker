@@ -40,6 +40,24 @@ sudo nano /etc/mosquitto/mosquitto.conf
 listener 1883
 allow_anonymous true
 
+After add this file look like only this other uncommit code should delete.
+########################################
+# This is the default configuration file for mosquitto. It should be located
+# at /etc/mosquitto/mosquitto.conf
+
+# Place your local configuration in /etc/mosquitto/conf.d/
+
+pid_file /var/run/mosquitto.pid
+
+persistence true
+persistence_location /var/lib/mosquitto/
+
+log_dest file /var/log/mosquitto/mosquitto.log
+
+listener 1883
+allow_anonymous true
+########################################
+
 3) Then, press CTRL-X to exit and save the file. Press Y and Enter.
  
 4) Restart Mosquitto for the changes to take effect.
