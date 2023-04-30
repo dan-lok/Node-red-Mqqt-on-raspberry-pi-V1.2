@@ -1,0 +1,126 @@
+Instruction from this web site.
+https://randomnerdtutorials.com/how-to-install-mosquitto-broker-on-raspberry-pi/
+
+1) Everything working on raspberry pi SSH terminal
+
+2) Run the following command to upgrade and update your system:
+
+sudo apt update && sudo apt upgrade
+
+3) Press Y and Enter. It will take some time to update and upgrade (in my case, it took approximately 10 minutes).
+
+4) To install the Mosquitto Broker enter these next commands:
+
+sudo apt install -y mosquitto mosquitto-clients
+
+5) To make Mosquitto auto start when the Raspberry Pi boots, you need to run the following command (this means that the Mosquitto broker will automatically start when the Raspberry Pi starts):
+
+sudo systemctl enable mosquitto.service
+6) Now, test the installation by running the following command:
+
+mosquitto -v
+
+Enable Remote Access/ Authentication
+
+To enable remote access so that we can communicate with other IoT devices, we need to edit/create a configuration file.
+
+In this tutorial, we’ll cover:
+
+No Authentication
+Authentication with user and password
+
+>> Mosquitto Broker Enable Remote Access (No Authentication)
+
+1) Run the following command to open the mosquitto.conf file.
+
+sudo nano /etc/mosquitto/mosquitto.conf
+
+2) Move to the end of the file using the arrow keys and paste the following two lines:
+
+listener 1883
+allow_anonymous true
+
+3) Then, press CTRL-X to exit and save the file. Press Y and Enter.
+ 
+4) Restart Mosquitto for the changes to take effect.
+
+sudo systemctl restart mosquitto
+
+>> Mosquitto Broker Enable Remote Access (Authentication: user and password)
+
+You can add a user/password authentication to your MQTT broker.
+
+1) Run the following command, but replace YOUR_USERNAME with the username you want to use:
+
+sudo mosquitto_passwd -c /etc/mosquitto/passwd YOUR_USERNAME
+I’ll be using the MQTT user sara, so I run the command as follows:
+
+sudo mosquitto_passwd -c /etc/mosquitto/passwd sara
+
+When you run the preceding command with the desired username, you’ll be asked to enter a password. No characters will be displayed while you enter the password. Enter the password and memorize the user/pass combination, you’ll need it later in your projects to make a connection with the broker.
+
+This previous command creates a password file called passwd on the /etc/mosquitto directory.
+
+Now, we need to edit the mosquitto configuration file so that it only allows authentication with the username and password we’ve defined.
+
+2) Run the following command to edit the configuration file:
+
+sudo nano /etc/mosquitto/mosquitto.conf
+3) Add the following line at the top of the file (make sure it is at the top of the file, otherwise it won’t work):
+
+per_listener_settings true
+4) Add the following three lines to allow connection for authenticated users and tell Mosquitto where the username/password file is located.
+
+allow_anonymous false
+listener 1883
+password_file /etc/mosquitto/passwd
+
+5) Press CTRL-X, then Y, and finally press Enter to exit and save the changes.
+
+6) Restart Mosquitto for the changes to take effect.
+
+sudo systemctl restart mosquitto
+To check if Mosquitto is actually running, you can run the following command:
+
+sudo systemctl status mosquitto
+
+Now, you have authentication with username and password enabled. Remember that everytime you want to communicate with the broker, you’ll need to provide the username and password.
+
+Add More Users/Change Password
+To add more users to an existing password file, or to change the password for an existing user, leave out the -c argument:
+
+mosquitto_passwd <password file> <username>
+For example, if I want to change the password for the sara user and taking into account that the password file we created was called passwd, the command will be as follows:
+
+sudo mosquitto_passwd /etc/mosquitto/passwd sara
+
+Raspberry Pi IP Address
+To use Mosquitto broker later in your projects, you’ll need to know the Raspberry Pi IP address. To retrieve your Raspberry Pi IP address, type the next command in your Pi Terminal window:
+
+hostname -I
+
+>>>>>Testing Mosquitto Broker and Client on Raspberry Pi
+This fund in this web site - https://randomnerdtutorials.com/testing-mosquitto-broker-and-client-on-raspbbery-pi/
+
+Terminal 1
+Subscribing to testTopic Topic
+To subscribe to an MQTT topic with Mosquitto Client open a terminal Window #1 and enter the command:
+
+mosquitto_sub -d -t testTopic
+
+If you have enabled username and password on your broker, you need to run the command as follows:
+
+mosquitto_sub -d -t testTopic -u user -P pass
+Replace user with your username and pass with your password.
+
+Terminal 2
+Publishing “Hello World!” Message to testTopic Topic
+To publish a sample message to testTopic, open a terminal Window #2 and run the following command:
+
+mosquitto_pub -d -t testTopic -m "Hello world!"
+
+If you have enabled username and password on your broker, you need to run the command as follows:
+
+mosquitto_pub -d -t testTopic -m "Hello world!" -u user -P pass
+
+
