@@ -142,3 +142,4 @@ If you have enabled username and password on your broker, you need to run the co
 mosquitto_pub -d -t testTopic -m "Hello world!" -u user -P pass
 
 
+.....
